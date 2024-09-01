@@ -1,0 +1,35 @@
+services:
+
+  db:
+    container_name: bs-mysql
+    image: mysql:9.0
+    ports:
+      - '3306:3306'
+    environment:
+      MYSQL_DATABASE: dj_bookstore_db
+      MYSQL_ROOT_PASSWORD: BelieveInSecurity12345
+    volumes:
+      - mysql-data:/var/lib/bs-mysql/data
+
+  redis:
+    container_name: bs-redis
+    image: "redis:7-alpine"
+
+  web:
+    container_name: bs-django
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    ports:
+      - 8001:8000
+    volumes:
+      - .:/dj-book-store
+    environment:
+      - DEBUG=1
+      - SECRET_KEY=AFSDFLK2QFaslkfklqflk21klfglk24y23020203
+      - ALLOWED_HOSTS=localhost,127.0.0.1
+    depends_on:
+      - db
+      - redis
+
+volumes:
+  mysql-data:
